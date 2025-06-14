@@ -3,11 +3,8 @@ import OpenAI from 'openai';
 import { MergedEmployee, mergeEmployeeData, ProfileData, AvailabilityData } from '@/lib/data-utils'; // Import MergedEmployee, mergeEmployeeData, ProfileData, and AvailabilityData
 import { ChatMessage } from '@/types';
 
-// WARNING: This is for testing only. Remove before production!
-const OPENAI_API_KEY = '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';
-
 const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
+  apiKey: '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',
 });
 
 async function fetchProfiles(): Promise<ProfileData[]> {
