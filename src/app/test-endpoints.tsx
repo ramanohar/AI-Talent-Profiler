@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { fetchProfiles, fetchAvailability } from '@/services/api';
-import { ChatMessage } from '@/types';
-import { MergedEmployee, mergeEmployeeData } from '@/lib/data-utils';
+import { ChatMessage, EmployeeProfile, Availability } from '@/types';
+import { MergedEmployee, mergeEmployeeData, ProfileData, AvailabilityData } from '@/lib/data-utils';
 
 export default function TestEndpoints() {
   const [mergedData, setMergedData] = useState<MergedEmployee[]>([]);
@@ -12,8 +12,8 @@ export default function TestEndpoints() {
   useEffect(() => {
     const testEndpoints = async () => {
       try {
-        const profilesData = await fetchProfiles();
-        const availabilityData = await fetchAvailability();
+        const profilesData = await fetchProfiles() as unknown as ProfileData[];
+        const availabilityData = await fetchAvailability() as unknown as AvailabilityData[];
         
         const merged = mergeEmployeeData(profilesData, availabilityData);
         setMergedData(merged);
