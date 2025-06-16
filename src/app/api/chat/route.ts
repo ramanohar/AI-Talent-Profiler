@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { MergedEmployee, mergeEmployeeData, ProfileData, AvailabilityData } from '@/lib/data-utils'; // Import MergedEmployee, mergeEmployeeData, ProfileData, and AvailabilityData
 import { ChatMessage } from '@/types';
+import dotenv from 'dotenv';
+dotenv.config();
 
+console.log('Loaded OPENAI_API_KEY:', process.env.OPENAI_API_KEY ? '[SET]' : '[NOT SET]');
 
 const openai = new OpenAI({
-  apiKey: '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',
+  apiKey: process.env.OPENAI_API_KEY!,
 });
 
 console.log('OpenAI API Key:', openai.apiKey );
@@ -201,13 +204,13 @@ export async function POST(req: NextRequest) {
       .sort((a, b) => b.score - a.score);
 
     // Prepare candidate context for the LLM
-    const candidateSummaries = scoredCandidates.slice(0, 10).map(emp => {
+    const candidateSummaries = scoredCandidates.slice(0, 10).map((emp, idx) => {
       const allSkills = [
         ...(emp.consultant.additionSkills?.map((s: any) => s.name) || []),
         ...(emp.consultant.managedSkills?.map((s: any) => s.name) || [])
       ];
-      return `Name: ${emp.consultant.displayName}\nTitle: ${emp.title}\nSkills: ${allSkills.join(', ')}\nLocation: ${emp.consultant.city}, ${emp.consultant.country}\nEmail: ${emp.consultant.email}\nAvailable From: ${emp.availableFrom || 'N/A'}\nProjects: ${(emp.consultant.projects || []).map((p: any) => p.primaryName || p).join(', ') || 'N/A'}\nIntroduction: ${emp.introduction || 'N/A'}`;
-    }).join('\n---\n');
+      return `${idx + 1}. ${emp.consultant.displayName}\n   Title: ${emp.title}\n   Skills: ${allSkills.join(', ')}\n   Location: ${emp.consultant.city}, ${emp.consultant.country}\n   Email: ${emp.consultant.email}`;
+    }).join('\n\n');
 
     // Find last candidate context if any
     const lastCandidate = getLastCandidateDetail(messages);
@@ -238,6 +241,13 @@ Just let me know what kind of candidate you're looking for, and I'll help you fi
 - "Find me a senior developer with React and Node.js experience"
 - "Show me candidates available in the next month"
 - "I need someone with healthcare domain experience"
+
+When listing candidates, use plain text formatting. Do not use Markdown or asterisks for bold. Format each candidate as:
+1. Name
+   Title: ...
+   Skills: ...
+   Location: ...
+   Email: ...
 
 ${scoringCriteria}\n\nHere are the top candidates for the user's request:\n${candidateSummaries}${lastCandidateContext ? '\n' + lastCandidateContext : ''}`;
 
