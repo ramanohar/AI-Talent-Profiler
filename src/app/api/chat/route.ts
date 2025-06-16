@@ -4,7 +4,7 @@ import { MergedEmployee, mergeEmployeeData, ProfileData, AvailabilityData } from
 import { ChatMessage } from '@/types';
 
 const openai = new OpenAI({
-  apiKey: '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',
+  apiKey: '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',
 });
 
 async function fetchProfiles(): Promise<ProfileData[]> {
@@ -177,6 +177,20 @@ export async function POST(req: NextRequest) {
     const availability = await fetchAvailability();
     const mergedData: MergedEmployee[] = mergeEmployeeData(profiles, availability);
     const userMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
+    // Detect if this is the user's first message and it's a greeting
+    const greetings = ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'];
+    const isFirstMessage = messages.length === 1;
+    const isGreeting = greetings.some(greet => userMessage.trim() === greet || userMessage.trim().startsWith(greet + ' '));
+    if (isFirstMessage && isGreeting) {
+      // Respond with the full welcome message and examples
+      const welcomeMessage = `Hello! 👋 I'm your AI hiring assistant, here to help you find the perfect candidates for your needs. I can:\n\n- Search for candidates based on specific skills, experience levels, or domains\n- Provide detailed candidate profiles and availability information\n- Explain how candidates are scored and matched to your requirements\n- Help you refine your search to find better matches\n\nJust let me know what kind of candidate you're looking for, and I'll help you find the best matches! For example, you could ask:\n- "Find me a senior developer with React and Node.js experience"\n- "Show me candidates available in the next month"\n- "I need someone with healthcare domain experience"`;
+      return NextResponse.json({
+        assistantMessage: {
+          role: 'assistant',
+          content: welcomeMessage
+        }
+      });
+    }
     const requiredSkills = getSkillsFromQuery(userMessage);
     const requiredExperience = getExperienceLevelFromQuery(userMessage);
     const requiredDomain = getDomainFromQuery(userMessage);
@@ -211,7 +225,19 @@ export async function POST(req: NextRequest) {
     const scoringCriteria = `Scoring Criteria:\n- Skills Match (40%): Direct skill alignment\n- Experience Level (25%): Seniority appropriateness\n- Availability (20%): Schedule compatibility\n- Domain Knowledge (10%): Industry/project type experience\n- Team Fit (5%): Role compatibility`;
 
     // Warm, human-like system prompt
-    const systemPrompt = `You are an empathetic, friendly, and helpful AI hiring assistant. Always respond in a conversational, human-like way.\n\nIf the user asks about a candidate, use the provided candidate data to answer in detail, highlighting their strengths, availability, and project experience.\nIf the user asks about scoring, explain it simply and warmly.\nAlways encourage the user to ask more questions or refine their search.\n\n${scoringCriteria}\n\nHere are the top candidates for the user's request:\n${candidateSummaries}${lastCandidateContext ? '\n' + lastCandidateContext : ''}`;
+    const systemPrompt = `Hello! 👋 I'm your AI hiring assistant, here to help you find the perfect candidates for your needs. I can:
+
+- Search for candidates based on specific skills, experience levels, or domains
+- Provide detailed candidate profiles and availability information
+- Explain how candidates are scored and matched to your requirements
+- Help you refine your search to find better matches
+
+Just let me know what kind of candidate you're looking for, and I'll help you find the best matches! For example, you could ask:
+- "Find me a senior developer with React and Node.js experience"
+- "Show me candidates available in the next month"
+- "I need someone with healthcare domain experience"
+
+${scoringCriteria}\n\nHere are the top candidates for the user's request:\n${candidateSummaries}${lastCandidateContext ? '\n' + lastCandidateContext : ''}`;
 
     // Prepare messages for LLM
     const messagesWithSystemPrompt = [
@@ -220,7 +246,7 @@ export async function POST(req: NextRequest) {
     ];
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4',
       messages: messagesWithSystemPrompt as any,
       temperature: 0.7,
     });
