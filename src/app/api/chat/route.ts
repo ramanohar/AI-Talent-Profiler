@@ -3,8 +3,9 @@ import OpenAI from 'openai';
 import { MergedEmployee, mergeEmployeeData, ProfileData, AvailabilityData } from '@/lib/data-utils'; // Import MergedEmployee, mergeEmployeeData, ProfileData, and AvailabilityData
 import { ChatMessage } from '@/types';
 
+console.log('OpenAI API Key:', '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');
 const openai = new OpenAI({
-  apiKey: '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',
+  apiKey: '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',
 });
 
 async function fetchProfiles(): Promise<ProfileData[]> {
@@ -179,11 +180,10 @@ export async function POST(req: NextRequest) {
     const userMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
     // Detect if this is the user's first message and it's a greeting
     const greetings = ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'];
-    const isFirstMessage = messages.length === 1;
     const isGreeting = greetings.some(greet => userMessage.trim() === greet || userMessage.trim().startsWith(greet + ' '));
-    if (isFirstMessage && isGreeting) {
-      // Respond with the full welcome message and examples
-      const welcomeMessage = `Hello! 👋 I'm your AI hiring assistant, here to help you find the perfect candidates for your needs. I can:\n\n- Search for candidates based on specific skills, experience levels, or domains\n- Provide detailed candidate profiles and availability information\n- Explain how candidates are scored and matched to your requirements\n- Help you refine your search to find better matches\n\nJust let me know what kind of candidate you're looking for, and I'll help you find the best matches! For example, you could ask:\n- "Find me a senior developer with React and Node.js experience"\n- "Show me candidates available in the next month"\n- "I need someone with healthcare domain experience"`;
+    if (isGreeting) {
+      // Respond with the new, fun welcome message
+      const welcomeMessage = `Hey there! 👋 I'm your AI hiring sidekick.\nTell me what kind of talent or team you need—skills, experience, or just a vibe—and I'll fetch the best matches.\nTry things like:\n- "Show me React devs"\n- "Who's available next month?"\n- "Got anyone with healthcare experience?"\n\nLet's build your superstar team! 🚀`;
       return NextResponse.json({
         assistantMessage: {
           role: 'assistant',
@@ -246,7 +246,7 @@ ${scoringCriteria}\n\nHere are the top candidates for the user's request:\n${can
     ];
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4o',
       messages: messagesWithSystemPrompt as any,
       temperature: 0.7,
     });
