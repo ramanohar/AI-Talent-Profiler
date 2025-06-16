@@ -3,10 +3,12 @@ import OpenAI from 'openai';
 import { MergedEmployee, mergeEmployeeData, ProfileData, AvailabilityData } from '@/lib/data-utils'; // Import MergedEmployee, mergeEmployeeData, ProfileData, and AvailabilityData
 import { ChatMessage } from '@/types';
 
-console.log('OpenAI API Key:', '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');
+
 const openai = new OpenAI({
-  apiKey: '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',
+  apiKey: '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',
 });
+
+console.log('OpenAI API Key:', openai.apiKey );
 
 async function fetchProfiles(): Promise<ProfileData[]> {
   try {
