@@ -4,8 +4,8 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'AI Talent Profiler Assistant',
-  description: 'Match project requirements with Valtechies profiles',
+  title: 'AI Shortlister',
+  description: 'Match project requirements with Valtechies',
 };
 
 export default function RootLayout({
