@@ -1,6 +1,6 @@
-# AI Talent Profiler Assistant
+# AI Shortlister
 
-This application is a full-stack AI-powered talent profiler built with Next.js and OpenAI's LLM. It allows users to search for Valtechies, ask follow-up questions, and receive conversational, context-aware responses.
+This application is a full-stack AI-powered shortlisting tool built with Next.js and OpenAI's LLM. It allows users to search for Valtechies, ask follow-up questions, and receive conversational, context-aware responses.
 
 ## Architecture Overview
 

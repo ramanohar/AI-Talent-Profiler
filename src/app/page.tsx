@@ -84,7 +84,7 @@ export default function Home() {
         <div className="max-w-4xl w-full mx-auto bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-[90vh]">
           {/* Header */}
           <div className="bg-blue-600 text-white p-4">
-            <h1 className="text-xl font-semibold">AI Talent Profiler Assistant</h1>
+            <h1 className="text-xl font-semibold">AI Shortlister</h1>
             <p className="text-sm text-blue-100">Ask me about project requirements and I'll find the best matches</p>
           </div>
 
